@@ -209,7 +209,12 @@ class Llvm < Formula
       # which adds it to the superenv keychain search path.
       mkdir_p "#{ENV["HOME"]}/Library/Preferences"
       username = ENV["USER"]
-      system "security", "list-keychains", "-d", "user", "-s", "/Users/#{username}/Library/Keychains/login.keychain"
+      userdir  = `echo ~#{username}`.chomp
+      keychain = "#{userdir}/Library/Keychains/login.keychain-db"
+      if ! File.exist? keychain
+         keychain = "#{userdir}/Library/Keychains/login.keychain"
+      end 
+      system "security", "list-keychains", "-d", "user", "-s", keychain
     end
 
     if build.with? "compiler-rt"
